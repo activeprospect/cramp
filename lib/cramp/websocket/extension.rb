@@ -1,9 +1,16 @@
+require 'base64'
+require 'digest/sha1'
+
 module Cramp
   module WebsocketExtension
     WEBSOCKET_RECEIVE_CALLBACK = 'websocket.receive_callback'.freeze
 
+    def protocol_class
+      @env['HTTP_SEC_WEBSOCKET_VERSION'] ? Protocol10 : Protocol76
+    end
+
     def websocket?
-      @env['HTTP_CONNECTION'] == 'Upgrade' && @env['HTTP_UPGRADE'] == 'WebSocket'
+      @env['HTTP_CONNECTION'] == 'Upgrade' && ['WebSocket', 'websocket'].include?(@env['HTTP_UPGRADE'])
     end
 
     def secure_websocket?
@@ -20,20 +27,23 @@ module Cramp
     end
 
     class WebSocketHandler
-      def initialize(env, websocket_url, body)
+      def initialize(env, websocket_url, body = nil)
         @env = env
         @websocket_url = websocket_url
         @body = body
       end
     end
 
-    class Protocol75 < WebSocketHandler
+    class Protocol10 < WebSocketHandler
+      MAGIC_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".freeze
+
       def handshake
-        upgrade =  "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-        upgrade << "Upgrade: WebSocket\r\n"
+        digest = Base64.encode64(Digest::SHA1.digest("#{@env['HTTP_SEC_WEBSOCKET_KEY']}#{MAGIC_GUID}")).chomp
+        
+        upgrade =  "HTTP/1.1 101 Switching Protocols\r\n"
+        upgrade << "Upgrade: websocket\r\n"
         upgrade << "Connection: Upgrade\r\n"
-        upgrade << "WebSocket-Origin: #{@env['HTTP_ORIGIN']}\r\n"
-        upgrade << "WebSocket-Location: #{@websocket_url}\r\n\r\n"
+        upgrade << "Sec-WebSocket-Accept: #{digest}\r\n\r\n"
         upgrade
       end
     end

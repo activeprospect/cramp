@@ -1,4 +1,38 @@
-== 0.13 Facelift (Unreleased)
+== 0.15 Crazy Apes (13 August, 2011)
+
+* Support for Chunked transfer encoding transport.
+
+  Example:
+
+  class ChunkedAction < Cramp::Action
+    self.transport = :chunked
+    on_start :send_data
+
+    def send_data
+      render "Chunk 1"
+      render "Chunk 2"
+    end
+  end
+
+== 0.14 Asgard (5 August, 2011)
+
+* Add an option to the application generator for configuring async Active Record.
+
+  Example:
+
+    $ cramp new liveblog --with-active-record
+
+    or
+
+    $ cramp new liveblog -M
+
+* Barebone application generator using Thor.
+
+  Example:
+
+    $ cramp new liveblog
+
+== 0.13 Facelift (31 July, 2011)
 
 * Added use_fiber_pool for wrapping every on_start/on_finish/periodic_timer callbacks within a Fiber. Default fiber pool size is 100.
 
