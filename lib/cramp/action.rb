@@ -38,10 +38,12 @@ module Cramp
         [status, headers.merge(self.default_sse_headers)]
       when :chunked
         status, headers = respond_to?(:respond_with, true) ? respond_with : [200, {}]
+
+        headers = headers.merge(self.default_chunked_headers)
         headers['Content-Type'] ||= 'text/html'
         headers['Cache-Control'] ||= 'no-cache'
 
-        [status, headers.merge(self.default_chunked_headers)]
+        [status, headers]
       else
         super
       end
@@ -110,7 +112,7 @@ module Cramp
     end
 
     def websockets_protocol_10?
-      [8, 9, 10].include?(@env['HTTP_SEC_WEBSOCKET_VERSION'].to_i)
+      [7, 8, 9, 10].include?(@env['HTTP_SEC_WEBSOCKET_VERSION'].to_i)
     end
 
     def protocol10_parser
