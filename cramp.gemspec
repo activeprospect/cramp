@@ -9,14 +9,11 @@ Gem::Specification.new do |s|
   s.email = 'pratiknaik@gmail.com'
   s.homepage = 'http://cramp.in'
 
-  # Not in a very distant future
-  # s.required_ruby_version = '>=1.9.2'
-
-  s.add_dependency('activesupport',   '>= 3.0.9')
-  s.add_dependency('rack',            '~> 1.4.1')
+  s.add_dependency('activesupport',   '>= 3.2.12')
+  s.add_dependency('rack',            '~> 1.4.5')
   s.add_dependency('eventmachine-le', '~> 1.1.4')
-  s.add_dependency('faye-websocket',  '~> 0.3.0')
-  s.add_dependency('thor',            '~> 0.16.0')
+  s.add_dependency('faye-websocket',  '~> 0.4.0')
+  s.add_dependency('thor',            '~> 0.17.0')
 
   s.files = Dir['README', 'MIT-LICENSE', 'lib/**/*', 'bin/**/*']
   s.has_rdoc = false
